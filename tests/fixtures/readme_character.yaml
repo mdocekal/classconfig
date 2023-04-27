@@ -1,0 +1,4 @@
+lvl: 1  # Level of a character
+name: # Name of a character
+inventory: # Character's inventory
+  size: 10  # Size of an inventory

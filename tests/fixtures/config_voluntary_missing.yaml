@@ -1,0 +1,19 @@
+arg: 1  # description of a
+parent: # description of parent
+  cls: ChildA  # name of class that is subclass of ParentC
+  config: # configuration for defined class
+    child_a_attribute: 3
+parent_with_default: # description of parent_with_default
+  cls: ChildB  # name of class that is subclass of ParentC
+  config: # configuration for defined class
+    child_b_attribute: 4
+    another:  # class that needs configuration
+      c:
+      d: cba  # description of d
+loggers:  # list of loggers
+- cls: ChildA  # name of class that is subclass of ParentC
+  config: # configuration for defined class
+    child_a_attribute: 5
+- cls: ChildA  # name of class that is subclass of ParentC
+  config: # configuration for defined class
+    child_a_attribute: 6

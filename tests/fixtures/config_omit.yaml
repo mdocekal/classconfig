@@ -1,0 +1,3 @@
+b:  # class that needs configuration
+  b:  # class that needs configuration
+    child_b_attribute: 4
