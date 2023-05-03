@@ -611,7 +611,7 @@ class Config:
 
         return res
 
-    def load(self, path_to: Optional[str] = None) -> LoadedConfig[str, Any]:
+    def load(self, path_to: Optional[str] = None, use_program_arguments: bool = True) -> LoadedConfig[str, Any]:
         """
         Loads configuration from file and arguments.
 
@@ -619,6 +619,7 @@ class Config:
          if None, then it is loaded from default path
 
          if default path is None, then it tries to load confiuration from default values
+        :param use_program_arguments: true uses program arguments
         :return: loaded configuration
         """
         path_to = path_to if path_to is not None else self.path_to
@@ -628,7 +629,8 @@ class Config:
         
         with open(path_to, "r") as f:
             conf_dict = YAML().load(f)
-            conf_dict.update(self.get_values_from_arguments())
+            if use_program_arguments:
+                conf_dict.update(self.get_values_from_arguments())
             return self.trans_and_val(conf_dict, path_to)
 
     def load_itself(self) -> LoadedConfig[str, Any]:
