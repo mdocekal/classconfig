@@ -48,6 +48,14 @@ Config(Character).save("config.yaml")
 
 You will get a file with the following content:
 
+
+```yaml
+lvl: 1  # Level of a character
+name: # Name of a character
+inventory: # Character's inventory
+  size: 10  # Size of an inventory
+```
+
 ### Validation
 As you have seen in the previous example, it is possible to add a validator. 
 A validator could be any callable that takes one argument and return `True` when valid. 
@@ -62,13 +70,6 @@ is done before the validation. Thus, it can be used to transform input into vali
 It can be any callable that takes one argument and returns the transformed value, but there also exist some predefined
 transformations in `classconfig.transforms` module.
 
-
-```yaml
-lvl: 1  # Level of a character
-name: # Name of a character
-inventory: # Character's inventory
-  size: 10  # Size of an inventory
-```
 
 ### Loading
 Now let's load the configuration file we just created and create an instance of `Character` class:
