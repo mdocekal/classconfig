@@ -570,6 +570,47 @@ class Config:
 
         return yaml
 
+    @classmethod
+    def config_from_object(cls, o: Any) -> "Config":
+        """
+        Creates configuration with user default values from given object.
+
+        :param o: object with values
+        :return: configuration
+        """
+
+        return Config(o.__class__, file_override_user_defaults=cls.configurable_values_from_object(o))
+
+    @classmethod
+    def configurable_values_from_object(cls, o: Any) -> Dict:
+        """
+        Creates dictionary with values associated for configurable attributes from given object.
+
+        :param o: object with values
+        :return: dictionary with user default values
+        """
+        config = {}
+
+        for i, (var_name, var) in enumerate(get_configurable_attributes(o.__class__).items()):
+            if isinstance(var, ConfigurableValue):
+                config[var_name] = getattr(o, var_name)
+            elif isinstance(var, ConfigurableFactory):
+                config[var_name] = cls.configurable_values_from_object(getattr(o, var_name))
+            elif isinstance(var, ConfigurableSubclassFactory):
+                config[var_name] = {}
+                config[var_name]["cls"] = getattr(o, var_name).__class__.__name__
+                config[var_name]["config"] = cls.configurable_values_from_object(getattr(o, var_name))
+            elif isinstance(var, ListOfConfigurableSubclassFactoryAttributes):
+                config[var_name] = []
+                for sub_o in enumerate(getattr(o, var_name)):
+                    config[var_name].append(cls.configurable_values_from_object(sub_o))
+            elif isinstance(var, UsedConfig):
+                continue
+            else:
+                raise ValueError(f"Unknown type {type(var)}")
+
+        return config
+
     def save(self, file_path: Union[str, TextIO], comments: bool = True) -> None:
         """
         Saves configuration into file.

@@ -410,6 +410,61 @@ class TestConfig(TestCase):
         }, config)
 
 
+class Inventory(ConfigurableMixin):
+    size: int = ConfigurableValue(desc="Size of an inventory", user_default=10, validator=lambda x: x > 0)
+    parent = ConfigurableSubclassFactory(parent_cls_type=ParentC, desc="description of parent")
+
+
+class Character(ConfigurableMixin):
+    lvl: int = ConfigurableValue(desc="Level of a character", user_default=1, validator=lambda x: x > 0)
+    name: str = ConfigurableValue(desc="Name of a character")
+    inventory: Inventory = ConfigurableFactory(desc="Character's inventory", cls_type=Inventory)
+
+
+class TestConfigurableValuesForObject(TestCase):
+
+    def setUp(self) -> None:
+        self.configurable_object = Character(lvl=99,
+                                             name="John",
+                                             inventory=Inventory(size=666, parent=ChildA(child_a_attribute="abc")))
+
+    def test_config_from_object(self):
+        config = Config.config_from_object(self.configurable_object)
+        self.assertEqual({
+            "lvl": 99,
+            "name": "John",
+            "inventory": {
+                "size": 666,
+                "parent": {
+                    "cls": "ChildA",
+                    "config": {
+                        "child_a_attribute": "abc"
+                    }
+                }
+            }
+        }, config.file_override_user_defaults)
+        self.assertEqual(Character, config.cls_type)
+
+    def test_configurable_values_from_object(self):
+        vals = Config.configurable_values_from_object(self.configurable_object)
+        self.assertEqual(
+            {
+                "lvl": 99,
+                "name": "John",
+                "inventory": {
+                    "size": 666,
+                    "parent": {
+                        "cls": "ChildA",
+                        "config": {
+                            "child_a_attribute": "abc"
+                        }
+                    }
+                }
+            },
+            vals
+        )
+
+
 class ConfigurableClassWithOverridenUserDefaults:
     a = ConfigurableValue(desc="description of a", user_default=1)
     another = ConfigurableFactory(desc="class that needs configuration", cls_type=AnotherConfigurableClass,
