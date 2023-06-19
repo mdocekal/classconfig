@@ -708,8 +708,8 @@ class Config:
                 elif var.type in [str, int, float, bool]:
                     call_with["type"] = var.type
                 else:
-                    # unsupported type
-                    continue
+                    # it is expected that type will be transformed
+                    call_with["type"] = str
 
                 parser.add_argument("--" + var_name, **call_with)
 
