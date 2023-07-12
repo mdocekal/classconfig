@@ -690,7 +690,7 @@ class Config:
 
         :return: argument parser
         """
-        parser = argparse.ArgumentParser()
+        parser = argparse.ArgumentParser(allow_abbrev=False)
         for var_name, var in get_configurable_attributes(self.cls_type).items():
             if ConfigurableFactory.should_omit(var_name, self.omit):
                 continue
