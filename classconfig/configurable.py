@@ -684,6 +684,22 @@ class Config:
         conf_dict.update(self.get_values_from_arguments())
         return self.trans_and_val(conf_dict, None)
 
+    @staticmethod
+    def bool_arg_convertor(value: str) -> bool:
+        """
+        Converts string to bool.
+
+        :param value: string to convert
+        :return: bool value
+        """
+
+        if value.lower() in ["true", "t", "1", "yes", "y"]:
+            return True
+        elif value.lower() in ["false", "f", "0", "no", "n"]:
+            return False
+        else:
+            raise argparse.ArgumentTypeError(f"Invalid boolean value: {value}")
+
     def create_arg_parser(self) -> argparse.ArgumentParser:
         """
         It will create argument parser from value attributes on top level.
@@ -706,7 +722,10 @@ class Config:
 
                     call_with["nargs"] = "+"
                 elif var.type in [str, int, float, bool]:
-                    call_with["type"] = var.type
+                    if var.type == bool:
+                        call_with["type"] = self.bool_arg_convertor
+                    else:
+                        call_with["type"] = var.type
                 else:
                     # it is expected that type will be transformed
                     call_with["type"] = str
