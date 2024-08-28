@@ -6,14 +6,18 @@ Created on 10.11.22
 """
 import enum
 import os
+from dataclasses import field
 from enum import Enum
 from io import StringIO
 from typing import Optional
 from unittest import TestCase
 
+from attr import dataclass
+
 from classconfig import ConfigurableValue, ConfigurableFactory, Config, \
     ConfigurableMixin, DelayedFactory, ConfigurableSubclassFactory, \
     UsedConfig, LoadedConfig, ListOfConfigurableSubclassFactoryAttributes
+
 from classconfig.transforms import EnumTransformer, TryTransforms, TransformIfNotNone
 from classconfig.validators import TypeValidator, ValueInIntervalFloatValidator
 from classconfig.yaml import YAML

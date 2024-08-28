@@ -6,11 +6,49 @@ Module with utils for working with classes itself.
 :author:     Martin Dočekal
 """
 import inspect
+from dataclasses import is_dataclass, fields, MISSING
+
 from typing import Type, List, TypeVar, Dict
+
+from attr import dataclass
 
 from classconfig.base import ConfigurableAttribute
 
 T = TypeVar("T")
+
+
+class ConfigurableDataclassMixin:
+    """
+    Mixin that marks dataclass as configurable class.
+    """
+
+    DESC_METADATA = "desc"   # metadata key for description
+
+
+def is_configurable(cls: Type, dataclass_mixin: bool = True) -> bool:
+    """
+    Checks if given class is configurable.
+
+    :param cls: class to check
+    :param dataclass_mixin: By default when a dataclass inherits from ConfigurableDataclassMixin all
+        fields are considered configurable. If you want to disable this behavior set this to False.
+    :return: True if class is configurable, False otherwise
+    """
+
+    if dataclass_mixin and isinstance(cls, ConfigurableDataclassMixin) and is_dataclass(cls):
+        return len(fields(cls)) > 0
+
+    # check whether parent classes are configurable
+    for base in cls.__bases__:
+        if is_configurable(base, dataclass_mixin=dataclass_mixin):
+            return True
+
+    for v_name in vars(cls):
+        v = getattr(cls, v_name)
+        if isinstance(v, ConfigurableAttribute):
+            return True
+
+    return False
 
 
 def subclasses(cls_type: Type[T], abstract_ok: bool = False, configurable_only: bool = False) -> List[Type[T]]:
@@ -26,7 +64,7 @@ def subclasses(cls_type: Type[T], abstract_ok: bool = False, configurable_only: 
     res = []
     for sub_cls in cls_type.__subclasses__():
         if (abstract_ok or not inspect.isabstract(sub_cls)) and \
-                (not configurable_only or len(get_configurable_attributes(sub_cls)) > 0):
+                (not configurable_only or is_configurable(sub_cls)):
             res.append(sub_cls)
         res.extend(subclasses(sub_cls, abstract_ok, configurable_only))
     return res
@@ -53,17 +91,45 @@ def sub_cls_from_its_name(parent_cls: Type[T], name: str, abstract_ok: bool = Fa
     raise ValueError(f"Invalid subclass name {name} for parent class {parent_cls}")
 
 
-def get_configurable_attributes(c: Type) -> Dict[str, ConfigurableAttribute]:
+def dataclass_field_2_configurable_attribute(field, desc_metadata: str = "desc") -> ConfigurableAttribute:
+    """
+    Converts dataclass field to configurable attribute.
+
+    :param field: dataclass field
+    :param desc_metadata: metadata key for description
+    :return: configurable attribute
+    """
+    from classconfig import ConfigurableFactory, ConfigurableValue
+    if field.type is not None:
+        if is_dataclass(field.type) or is_configurable(field.type):
+            return ConfigurableFactory(cls_type=field.type,
+                                       desc=field.metadata.get(desc_metadata, None),
+                                       name=field.name)
+    return ConfigurableValue(desc=field.metadata.get(desc_metadata, None), name=field.name, user_default=field.default if field.default is not MISSING else None)
+
+
+def get_configurable_attributes(c: Type, dataclass_mixin: bool = True, use_dataclass_fields: bool = False) -> Dict[str, ConfigurableAttribute]:
     """
     For given class returns all configurable attributes. Also obtains these from parents recursively.
 
     :param c: class to search the annotations
+    :param dataclass_mixin: By default when a dataclass inherits from ConfigurableDataclassMixin all
+        fields are considered configurable. If you want to disable this behavior set this to False.
+    :param use_dataclass_fields: if True dataclass fields are considered as configurable attributes
     :return: dict with name as key, and the configurable attribute as value
     """
 
+    use_dataclass_fields = use_dataclass_fields
+    if not use_dataclass_fields and dataclass_mixin and issubclass(c, ConfigurableDataclassMixin):
+        use_dataclass_fields = True
+
     configurables = {}
     for base in c.__bases__:
-        configurables.update(get_configurable_attributes(base))
+        configurables.update(get_configurable_attributes(base, dataclass_mixin=dataclass_mixin, use_dataclass_fields=use_dataclass_fields))
+
+    if use_dataclass_fields and is_dataclass(c):
+        for f in fields(c):
+            configurables[f.name] = dataclass_field_2_configurable_attribute(f)
 
     for v_name in vars(c):
         v = getattr(c, v_name)
