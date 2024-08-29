@@ -10,8 +10,6 @@ from dataclasses import is_dataclass, fields, MISSING
 
 from typing import Type, List, TypeVar, Dict
 
-from attr import dataclass
-
 from classconfig.base import ConfigurableAttribute
 
 T = TypeVar("T")
@@ -39,14 +37,16 @@ def is_configurable(cls: Type, dataclass_mixin: bool = True) -> bool:
         return len(fields(cls)) > 0
 
     # check whether parent classes are configurable
-    for base in cls.__bases__:
-        if is_configurable(base, dataclass_mixin=dataclass_mixin):
-            return True
+    if hasattr(cls, "__bases__"):
+        for base in cls.__bases__:
+            if is_configurable(base, dataclass_mixin=dataclass_mixin):
+                return True
 
-    for v_name in vars(cls):
-        v = getattr(cls, v_name)
-        if isinstance(v, ConfigurableAttribute):
-            return True
+    if hasattr(cls, "__dict__"):
+        for v_name in vars(cls):
+            v = getattr(cls, v_name)
+            if isinstance(v, ConfigurableAttribute):
+                return True
 
     return False
 
@@ -91,21 +91,30 @@ def sub_cls_from_its_name(parent_cls: Type[T], name: str, abstract_ok: bool = Fa
     raise ValueError(f"Invalid subclass name {name} for parent class {parent_cls}")
 
 
-def dataclass_field_2_configurable_attribute(field, desc_metadata: str = "desc") -> ConfigurableAttribute:
+def dataclass_field_2_configurable_attribute(field, desc_metadata: str = "desc", voluntary: bool = True) -> ConfigurableAttribute:
     """
     Converts dataclass field to configurable attribute.
 
     :param field: dataclass field
     :param desc_metadata: metadata key for description
+    :param voluntary: if True the attribute is voluntary
     :return: configurable attribute
     """
     from classconfig import ConfigurableFactory, ConfigurableValue
     if field.type is not None:
         if is_dataclass(field.type) or is_configurable(field.type):
-            return ConfigurableFactory(cls_type=field.type,
-                                       desc=field.metadata.get(desc_metadata, None),
-                                       name=field.name)
-    return ConfigurableValue(desc=field.metadata.get(desc_metadata, None), name=field.name, user_default=field.default if field.default is not MISSING else None)
+            return ConfigurableFactory(
+                cls_type=field.type,
+                desc=field.metadata.get(desc_metadata, None),
+                name=field.name,
+                voluntary=voluntary
+            )
+    return ConfigurableValue(
+        desc=field.metadata.get(desc_metadata, None),
+        name=field.name,
+        user_default=field.default if field.default is not MISSING else None,
+        voluntary=voluntary
+    )
 
 
 def get_configurable_attributes(c: Type, dataclass_mixin: bool = True, use_dataclass_fields: bool = False) -> Dict[str, ConfigurableAttribute]:
