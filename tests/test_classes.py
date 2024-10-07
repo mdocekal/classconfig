@@ -210,12 +210,12 @@ class TestDataclassField2ConfigurableAttribute(TestCase):
     def test_dict_default_no_desc(self):
         x = dataclass_field_2_configurable_attribute(self.fields["dict_default_no_desc"])
         self.assertEqual(ConfigurableValue, type(x))
-        self.assertIsNone(x.user_default)
+        self.assertEqual({}, x.user_default)
 
     def test_dict_default_desc(self):
         x = dataclass_field_2_configurable_attribute(self.fields["dict_default_desc"])
         self.assertEqual(ConfigurableValue, type(x))
-        self.assertIsNone(x.user_default)
+        self.assertEqual({}, x.user_default)
         self.assertEqual("description of dict", x.desc)
 
     def test_class_non_default_no_desc(self):
@@ -242,7 +242,7 @@ class TestConfigurableDataclassMixin(TestCase):
             "  r: abc # description of text\n"
             "a: 1 # description of a\n"
             "b: def # description of b\n"
-            "d: # description of d\n"
+            "d: {} # description of d\n"
             , YAML().dumps(config)
         )
 

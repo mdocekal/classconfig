@@ -109,10 +109,17 @@ def dataclass_field_2_configurable_attribute(field, desc_metadata: str = "desc",
                 name=field.name,
                 voluntary=voluntary
             )
+
+    default = None
+    if field.default is not MISSING:
+        default = field.default
+    elif field.default_factory is not MISSING:
+        default = field.default_factory()
+
     return ConfigurableValue(
         desc=field.metadata.get(desc_metadata, None),
         name=field.name,
-        user_default=field.default if field.default is not MISSING else None,
+        user_default=default,
         voluntary=voluntary
     )
 
