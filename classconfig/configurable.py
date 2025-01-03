@@ -404,7 +404,7 @@ class Config:
     """
 
     def __init__(self, cls_type: Type, file_override_user_defaults: Optional[Dict] = None,
-                 omit: Optional[Dict[str, Union[AbstractSet, Dict]]] = None, path_to: Optional[str] = None):
+                 omit: Optional[Dict[str, Union[AbstractSet, Dict]]] = None, path_to: Optional[str] = None, allow_extra: bool = True):
         """
         defines for which class this factory is for
 
@@ -426,6 +426,7 @@ class Config:
             Will omit batch_size from the passed class and input_size attribute of model attribute.
         :param path_to: voluntary you can provide path to configuration file from which the configuration was loaded
             it will be used for transformation of relative paths
+        :param allow_extra: if True extra attributes in configuration are allowed
         """
 
         self.cls_type = cls_type
@@ -433,6 +434,7 @@ class Config:
         self.omit = omit
         self.path_to = path_to
         self.arg_parser = self.create_arg_parser()
+        self.allow_extra = allow_extra
 
     @staticmethod
     def pass_omit(omit: Optional[Dict[str, Union[AbstractSet, Dict]]], attribute_name: str,
@@ -758,7 +760,8 @@ class Config:
         try:
             if value is not None:  # not voluntary or not missing
                 return Config(attribute.cls_type,
-                              omit=self.pass_omit(self.omit, attribute_name, attribute)
+                              omit=self.pass_omit(self.omit, attribute_name, attribute),
+                              allow_extra=self.allow_extra
                               ).trans_and_val(value, path_to)
         except ConfigError as e:
             raise ConfigError(e.msg, [attribute.name] + e.attribute)
@@ -796,7 +799,8 @@ class Config:
                 return {
                     "cls": c_name,
                     "config": Config(c,
-                                     omit=self.pass_omit(self.omit, attribute_name, attribute)).trans_and_val(conf, path_to)
+                                     omit=self.pass_omit(self.omit, attribute_name, attribute),
+                                     allow_extra=self.allow_extra).trans_and_val(conf, path_to)
                 }
 
         except ConfigError as e:
@@ -877,7 +881,15 @@ class Config:
         res_config = LoadedConfig()
         res_config.untransformed = config
 
-        for var_name, var in get_configurable_attributes(self.cls_type).items():
+        configurable_attributes = get_configurable_attributes(self.cls_type)
+        # check for extra attributes
+        if not self.allow_extra:
+            in_config_names = set(k.name for k in configurable_attributes.values())
+            for k in config.keys():
+                if k not in in_config_names:
+                    raise ConfigError(f"Extra attribute:", [k])
+
+        for var_name, var in configurable_attributes.items():
             if var.hidden or ConfigurableFactory.should_omit(var_name, self.omit):
                 continue
 

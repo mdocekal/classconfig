@@ -16,7 +16,7 @@ from attr import dataclass
 
 from classconfig import ConfigurableValue, ConfigurableFactory, Config, \
     ConfigurableMixin, DelayedFactory, ConfigurableSubclassFactory, \
-    UsedConfig, LoadedConfig, ListOfConfigurableSubclassFactoryAttributes
+    UsedConfig, LoadedConfig, ListOfConfigurableSubclassFactoryAttributes, ConfigError
 
 from classconfig.transforms import EnumTransformer, TryTransforms, TransformIfNotNone
 from classconfig.validators import TypeValidator, ValueInIntervalFloatValidator
@@ -146,6 +146,7 @@ class ConfigurableClassWithOmit(ConfigurableMixin):
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 FIXTURES_PATH = os.path.join(SCRIPT_PATH, "fixtures")
 CONFIG_PATH = os.path.join(FIXTURES_PATH, "config.yaml")
+CONFIG_EXTRA_PATH = os.path.join(FIXTURES_PATH, "config_extra.yaml")
 CONFIG_VOLUNTARY_MISSING_PATH = os.path.join(FIXTURES_PATH, "config_voluntary_missing.yaml")
 CONFIG_OMIT_PATH = os.path.join(FIXTURES_PATH, "config_omit.yaml")
 
@@ -335,6 +336,53 @@ class TestConfig(TestCase):
 
     def test_load_yaml(self):
         config = self.config.load(CONFIG_PATH)
+
+        self.assertEqual({
+            "a": 1,
+            "another": {
+                "c": None,
+                "d": "abc"
+            },
+            "b": Num.TWO,
+            "parent": {
+                "cls": "ChildA",
+                "config": {
+                    "child_a_attribute": 3
+                }
+            },
+            "parent_with_default": {
+                "cls": "ChildB",
+                "config": {
+                    "child_b_attribute": 4,
+                    "another": {
+                        "c": None,
+                        "d": "cba"
+                    },
+                }
+            },
+            "loggers": [
+                {
+                    "cls": "ChildA",
+                    "config": {
+                        "child_a_attribute": 5
+                    }
+                },
+                {
+                    "cls": "ChildA",
+                    "config": {
+                        "child_a_attribute": 6
+                    }
+                }
+            ]
+        }, config)
+
+    def test_load_yaml_extra(self):
+        self.config.allow_extra = False
+        with self.assertRaises(ConfigError):
+            _ = self.config.load(CONFIG_EXTRA_PATH)
+
+    def test_load_yaml_allow_extra(self):
+        config = self.config.load(CONFIG_EXTRA_PATH)
 
         self.assertEqual({
             "a": 1,
