@@ -150,7 +150,8 @@ def get_configurable_attributes(c: Type, dataclass_mixin: bool = True, use_datac
 
     if use_dataclass_fields and is_dataclass(c):
         for f in fields(c):
-            configurables[f.name] = dataclass_field_2_configurable_attribute(f, desc_metadata=desc_metadata)
+            if f.init is not False:
+                configurables[f.name] = dataclass_field_2_configurable_attribute(f, desc_metadata=desc_metadata)
 
     for v_name in vars(c):
         v = getattr(c, v_name)

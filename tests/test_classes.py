@@ -130,6 +130,7 @@ class ConfigurableDataclassA(ConfigurableDataclassMixin):
     a: int = field(default=1, metadata={"desc": "description of a"})
     b: str = field(default="def", metadata={"desc": "description of b"})
     d: dict = field(default_factory=dict, metadata={"desc": "description of d"})
+    _g: bool = field(init=False, default=False)
 
 
 @dataclass
