@@ -133,6 +133,15 @@ class ConfigurableDataclassA(ConfigurableDataclassMixin):
 
 
 @dataclass
+class ConfigurableDataclassAHelp(ConfigurableDataclassMixin):
+    DESC_METADATA = "help"
+    conf_b: ConfigurableDataclassB = field(metadata={"help": "description of c"})
+    test_class: ConfigurableClassC = field(metadata={"help": "description of test_class"})
+    a: int = field(default=1, metadata={"help": "description of a"})
+    b: str = field(default="def", metadata={"help": "description of b"})
+    d: dict = field(default_factory=dict, metadata={"help": "description of d"})
+
+@dataclass
 class FieldsForDataclassFieldConversion:
     int_non_default_no_desc: int = field()
     int_non_default_desc: int = field(metadata={"desc": "description of int"})
@@ -231,6 +240,23 @@ class TestDataclassField2ConfigurableAttribute(TestCase):
 class TestConfigurableDataclassMixin(TestCase):
     def test_to_yaml(self):
         c = Config(ConfigurableDataclassA)
+        config = c.generate_yaml_config()
+
+        self.assertEqual(
+            "conf_b:  # description of c\n"
+            "  a: 10  # description of a\n"
+            "  b: abc # description of b\n"
+            "test_class: # description of test_class\n"
+            "  text: help  # description of text\n"
+            "  r: abc # description of text\n"
+            "a: 1 # description of a\n"
+            "b: def # description of b\n"
+            "d: {} # description of d\n"
+            , YAML().dumps(config)
+        )
+
+    def test_to_yaml_non_default_desc(self):
+        c = Config(ConfigurableDataclassAHelp)
         config = c.generate_yaml_config()
 
         self.assertEqual(
