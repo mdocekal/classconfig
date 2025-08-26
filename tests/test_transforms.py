@@ -21,14 +21,14 @@ class Test(TestCase):
         self.assertEqual("a", transformer("a"))
 
     def test_relative_path_transformer(self):
-        transformer = RelativePathTransformer(base_path="/home/user/")
+        transformer = RelativePathTransformer(base_path="/")
 
-        self.assertEqual("/home/user/file.txt", transformer("file.txt"))
+        self.assertEqual("/file.txt", transformer("file.txt"))
 
         with self.assertRaises(ValueError):
             transformer(None)
 
-        transformer = RelativePathTransformer(base_path="/home/user", allow_none=True)
+        transformer = RelativePathTransformer(base_path="/", allow_none=True)
         self.assertIsNone(transformer(None))
 
     def test_cpuworkers_transformer(self):

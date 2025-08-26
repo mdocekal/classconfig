@@ -964,7 +964,10 @@ class ConfigurableMixin:
                 if var_name in kwargs:
                     setattr(self, var_name, kwargs[var_name])
                 elif hasattr(value, "user_default"):
-                    setattr(self, var_name, value.user_default)
+                    v = value.user_default
+                    if hasattr(value, "transform") and value.transform is not None:
+                        v = value.transform(v)
+                    setattr(self, var_name, v)
                 else:
                     raise KeyError(f"Missing attribute {var_name} for {cls.__name__}")
 

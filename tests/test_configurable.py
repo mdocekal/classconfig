@@ -462,6 +462,18 @@ class TestConfig(TestCase):
         }, config)
 
 
+class InventoryAllDefault(ConfigurableMixin):
+    size: int = ConfigurableValue(desc="Size of an inventory", user_default=10, validator=lambda x: x > 0, transform=lambda x: x + 1)
+    parent = ConfigurableSubclassFactory(parent_cls_type=ParentC, desc="description of parent", voluntary=True)
+
+
+class TestConfigurableMixinDefaultInit(TestCase):
+    def test_all_default(self):
+        inv = InventoryAllDefault()
+        self.assertEqual(11, inv.size)
+        self.assertIsNone(inv.parent)
+
+
 class Inventory(ConfigurableMixin):
     size: int = ConfigurableValue(desc="Size of an inventory", user_default=10, validator=lambda x: x > 0)
     parent = ConfigurableSubclassFactory(parent_cls_type=ParentC, desc="description of parent")
