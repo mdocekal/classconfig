@@ -20,7 +20,7 @@ with open("requirements.txt") as f:
 
 setup_args = dict(
     name='classconfig',
-    version='1.0.10',
+    version='1.0.11',
     description='Package for creating configuration files automatically and loading objects from those configuration files.',
     long_description_content_type="text/markdown",
     long_description=README,
