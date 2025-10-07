@@ -12,7 +12,6 @@ from contextlib import nullcontext
 from inspect import signature
 from pathlib import Path
 from typing import Any, Optional, Type, List, Generic, TypeVar, Sequence, Dict, Union, Callable, AbstractSet, TextIO
-from abc import ABC
 
 from ruamel.yaml import CommentedMap, CommentedSeq
 
@@ -980,7 +979,7 @@ class ConfigurableMixin:
             self.__post_init__(**params)
 
 
-class CreatableMixin(ABC):
+class CreatableMixin:
     """
     Mixin for creating class from configuration.
     """
