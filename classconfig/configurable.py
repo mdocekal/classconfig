@@ -12,6 +12,7 @@ from contextlib import nullcontext
 from inspect import signature
 from pathlib import Path
 from typing import Any, Optional, Type, List, Generic, TypeVar, Sequence, Dict, Union, Callable, AbstractSet, TextIO
+from abc import ABC
 
 from ruamel.yaml import CommentedMap, CommentedSeq
 
@@ -977,3 +978,34 @@ class ConfigurableMixin:
             for p in s.parameters.keys():
                 params[p] = kwargs[p]
             self.__post_init__(**params)
+
+
+class CreatableMixin(ABC):
+    """
+    Mixin for creating class from configuration.
+    """
+
+    @classmethod
+    def create(cls: Type[T], config: Union[str, Dict[str, Any], LoadedConfig[str, Any]], path_to_config: Optional[str] = None) -> T:
+        """
+        Creates instance of given class.
+
+        :param config: configuration for initialization
+            it might be:
+                - string: path to YAML file with configuration
+                - dictionary with configuration
+                - LoadedConfig object
+        :param path_to_config: path to configuration file
+            if given, it might be used for transformation of relative paths
+        :return: initialized class
+        :raise ValueError: when the config type is invalid
+        """
+        if isinstance(config, str):
+            config = Config(cls).load(config)
+        elif isinstance(config, dict):
+            config = Config(cls).trans_and_val(config, path_to_config)
+        elif not isinstance(config, LoadedConfig):
+            raise ValueError(f"Invalid config type {type(config)}")
+
+        return ConfigurableFactory(cls).create(config)
+

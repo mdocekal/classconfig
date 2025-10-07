@@ -16,7 +16,7 @@ from attr import dataclass
 
 from classconfig import ConfigurableValue, ConfigurableFactory, Config, \
     ConfigurableMixin, DelayedFactory, ConfigurableSubclassFactory, \
-    UsedConfig, LoadedConfig, ListOfConfigurableSubclassFactoryAttributes, ConfigError
+    UsedConfig, LoadedConfig, ListOfConfigurableSubclassFactoryAttributes, ConfigError, CreatableMixin
 
 from classconfig.transforms import EnumTransformer, TryTransforms, TransformIfNotNone
 from classconfig.validators import TypeValidator, ValueInIntervalFloatValidator
@@ -792,3 +792,43 @@ class TestTransformIfNotNone(TestCase):
     def test_transform_if_not_none(self):
         self.assertIsNone(self.trans(None))
         self.assertEqual(2, self.trans(1))
+
+
+class CreatableClass(ConfigurableMixin, CreatableMixin):
+    a = ConfigurableValue()
+    b = ConfigurableValue()
+    c = ConfigurableValue()
+
+class TestCreatableMixin(TestCase):
+
+    def test_create_from_loaded_config(self):
+        config = LoadedConfig({
+            "a": 1,
+            "b": 2,
+            "c": 3
+        })
+        res = CreatableClass.create(config)
+        self.assertTrue(isinstance(res, CreatableClass))
+        self.assertEqual(1, res.a)
+        self.assertEqual(2, res.b)
+        self.assertEqual(3, res.c)
+
+
+    def test_create_from_dict(self):
+        res = CreatableClass.create({"a": 1, "b": 2, "c": 3})
+        self.assertTrue(isinstance(res, CreatableClass))
+        self.assertEqual(1, res.a)
+        self.assertEqual(2, res.b)
+        self.assertEqual(3, res.c)
+
+    def test_create_from_path(self):
+        res = CreatableClass.create(os.path.join(FIXTURES_PATH, "config_creatable.yaml"))
+        self.assertTrue(isinstance(res, CreatableClass))
+        self.assertEqual(1, res.a)
+        self.assertEqual(2, res.b)
+        self.assertEqual(3, res.c)
+
+    def test_create_from_none(self):
+        with self.assertRaises(ValueError):
+            _ = CreatableClass.create(None)
+
