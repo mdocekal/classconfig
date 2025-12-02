@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   docs:
@@ -18,14 +22,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
           pip install -r docs/requirements.txt
-          pip install .
 
       - name: Build docs
         run: |
-          cd docs
-          make html
+          sphinx-build -b html docs/source docs/build/html
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
