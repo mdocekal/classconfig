@@ -1,0 +1,428 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage &mdash; classconfig 1.0.13 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=0086fcda"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Welcome to classconfig’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            classconfig
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-files">Configuration Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#generating-configuration">Generating Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-configuration">Loading Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#dataclasses">Dataclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-features">Advanced Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configurable-attributes">Configurable Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mixins">Mixins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#validators">Validators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transformers">Transformers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#comprehensive-example">Comprehensive Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#why-yaml">Why YAML?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#basic-configuration">1. Basic Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#nested-configuration">2. Nested Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#polymorphism-with-subclass-factory">3. Polymorphism with Subclass Factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#list-of-polymorphic-objects">4. List of Polymorphic Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#dataclasses">5. Dataclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#validation">6. Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#transformation-enums">7. Transformation (Enums)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#relative-paths">8. Relative Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#delayed-initialization">9. Delayed Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#inheritance">10. Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#omit-attributes-in-factory">11. Omit Attributes in Factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#overriding-user-defaults">12. Overriding User Defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#creatable-mixin">13. Creatable Mixin</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="classconfig.html">classconfig package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="classconfig.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classconfig.html#classconfig-base-module">classconfig.base module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classconfig.html#classconfig-classes-module">classconfig.classes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classconfig.html#classconfig-configurable-module">classconfig.configurable module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classconfig.html#classconfig-transforms-module">classconfig.transforms module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classconfig.html#classconfig-validators-module">classconfig.validators module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classconfig.html#classconfig-yaml-module">classconfig.yaml module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classconfig.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">classconfig</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#installation" id="id1">Installation</a></p></li>
+<li><p><a class="reference internal" href="#basic-usage" id="id2">Basic Usage</a></p></li>
+<li><p><a class="reference internal" href="#configuration-files" id="id3">Configuration Files</a></p>
+<ul>
+<li><p><a class="reference internal" href="#generating-configuration" id="id4">Generating Configuration</a></p></li>
+<li><p><a class="reference internal" href="#loading-configuration" id="id5">Loading Configuration</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#dataclasses" id="id6">Dataclasses</a></p></li>
+<li><p><a class="reference internal" href="#advanced-features" id="id7">Advanced Features</a></p>
+<ul>
+<li><p><a class="reference internal" href="#configurable-attributes" id="id8">Configurable Attributes</a></p></li>
+<li><p><a class="reference internal" href="#mixins" id="id9">Mixins</a></p></li>
+<li><p><a class="reference internal" href="#validators" id="id10">Validators</a></p></li>
+<li><p><a class="reference internal" href="#transformers" id="id11">Transformers</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#comprehensive-example" id="id12">Comprehensive Example</a></p></li>
+<li><p><a class="reference internal" href="#why-yaml" id="id13">Why YAML?</a></p></li>
+</ul>
+</nav>
+<section id="installation">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Installation</a><a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>You can install it using pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>classconfig
+</pre></div>
+</div>
+</section>
+<section id="basic-usage">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Basic Usage</a><a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h2>
+<p>The core of <code class="docutils literal notranslate"><span class="pre">classconfig</span></code> is the <code class="docutils literal notranslate"><span class="pre">ConfigurableMixin</span></code> class and <code class="docutils literal notranslate"><span class="pre">ConfigurableValue</span></code>/<code class="docutils literal notranslate"><span class="pre">ConfigurableFactory</span></code> descriptors.</p>
+<p>Here is a simple example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">classconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurableMixin</span><span class="p">,</span> <span class="n">ConfigurableValue</span><span class="p">,</span> <span class="n">Config</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyConfig</span><span class="p">(</span><span class="n">ConfigurableMixin</span><span class="p">):</span>
+    <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">ConfigurableValue</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Host address&quot;</span><span class="p">,</span> <span class="n">user_default</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
+    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">ConfigurableValue</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Port number&quot;</span><span class="p">,</span> <span class="n">user_default</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
+
+<span class="c1"># Create an instance with default values</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">MyConfig</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Host: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">, Port: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Output: Host: localhost, Port: 8080</span>
+
+<span class="c1"># Create an instance with custom values</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">MyConfig</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">9090</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Host: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">, Port: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Output: Host: 127.0.0.1, Port: 9090</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration-files">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Configuration Files</a><a class="headerlink" href="#configuration-files" title="Link to this heading"></a></h2>
+<section id="generating-configuration">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Generating Configuration</a><a class="headerlink" href="#generating-configuration" title="Link to this heading"></a></h3>
+<p>You can easily generate a YAML configuration file from your class definition:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">classconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+
+<span class="c1"># Generate YAML config</span>
+<span class="n">Config</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The generated <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code> will look like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span><span class="w">  </span><span class="c1"># Host address</span>
+<span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w">  </span><span class="c1"># Port number</span>
+</pre></div>
+</div>
+</section>
+<section id="loading-configuration">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Loading Configuration</a><a class="headerlink" href="#loading-configuration" title="Link to this heading"></a></h3>
+<p>You can load the configuration back into your class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">classconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">ConfigurableFactory</span>
+
+<span class="c1"># Load config</span>
+<span class="n">loaded_config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
+
+<span class="c1"># Create instance</span>
+<span class="n">my_obj</span> <span class="o">=</span> <span class="n">ConfigurableFactory</span><span class="p">(</span><span class="n">MyConfig</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">loaded_config</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Host: </span><span class="si">{</span><span class="n">my_obj</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">, Port: </span><span class="si">{</span><span class="n">my_obj</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="dataclasses">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Dataclasses</a><a class="headerlink" href="#dataclasses" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">classconfig</span></code> also supports Python dataclasses via <code class="docutils literal notranslate"><span class="pre">ConfigurableDataclassMixin</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">classconfig.classes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurableDataclassMixin</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ServerConfig</span><span class="p">(</span><span class="n">ConfigurableDataclassMixin</span><span class="p">):</span>
+    <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Host address&quot;</span><span class="p">})</span>
+    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Port number&quot;</span><span class="p">})</span>
+
+<span class="c1"># Usage is similar to ConfigurableMixin</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">ServerConfig</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="advanced-features">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Advanced Features</a><a class="headerlink" href="#advanced-features" title="Link to this heading"></a></h2>
+<section id="configurable-attributes">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Configurable Attributes</a><a class="headerlink" href="#configurable-attributes" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">classconfig</span></code> provides several descriptors to define configurable attributes:</p>
+<ul class="simple">
+<li><p><strong>ConfigurableValue</strong>: For simple values (int, str, float, bool, etc.).</p></li>
+<li><p><strong>ConfigurableFactory</strong>: For nested configurable objects.</p></li>
+<li><p><strong>ConfigurableSubclassFactory</strong>: For selecting and configuring a subclass of a given parent class.</p></li>
+<li><p><strong>ListOfConfigurableSubclassFactoryAttributes</strong>: For a list of configurable objects (subclasses).</p></li>
+</ul>
+</section>
+<section id="mixins">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Mixins</a><a class="headerlink" href="#mixins" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>ConfigurableMixin</strong>: The base mixin for standard classes.</p></li>
+<li><p><strong>ConfigurableDataclassMixin</strong>: The mixin for dataclasses.</p></li>
+</ul>
+</section>
+<section id="validators">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Validators</a><a class="headerlink" href="#validators" title="Link to this heading"></a></h3>
+<p>Validators ensure that the configuration values meet specific criteria. They are callables that take a value and return <code class="docutils literal notranslate"><span class="pre">True</span></code> or raise an exception.</p>
+<p>Available validators in <code class="docutils literal notranslate"><span class="pre">classconfig.validators</span></code>:</p>
+<ul class="simple">
+<li><p><strong>TypeValidator</strong>: Checks if value is of specific type.</p></li>
+<li><p><strong>IntegerValidator</strong>, <strong>FloatValidator</strong>, <strong>StringValidator</strong>, <strong>BoolValidator</strong>: Type-specific validators.</p></li>
+<li><p><strong>MinValueIntegerValidator</strong>, <strong>MinValueFloatValidator</strong>: Checks minimum value.</p></li>
+<li><p><strong>ValueInIntervalIntegerValidator</strong>: Checks if value is within an interval.</p></li>
+<li><p><strong>AllValidator</strong>: Combines multiple validators (AND logic).</p></li>
+<li><p><strong>AnyValidator</strong>: Combines multiple validators (OR logic).</p></li>
+</ul>
+</section>
+<section id="transformers">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Transformers</a><a class="headerlink" href="#transformers" title="Link to this heading"></a></h3>
+<p>Transformers modify the input value before validation.</p>
+<p>Available transformers in <code class="docutils literal notranslate"><span class="pre">classconfig.transforms</span></code>:</p>
+<ul class="simple">
+<li><p><strong>TryTransforms</strong>: Tries multiple transformers in order.</p></li>
+<li><p><strong>RelativePathTransformer</strong>: Resolves relative paths.</p></li>
+<li><p><strong>CPUWorkersTransformer</strong>: Handles CPU count (e.g., -1 for all cores).</p></li>
+<li><p><strong>EnumTransformer</strong>: Converts string to Enum member.</p></li>
+<li><p><strong>SubclassTransformer</strong>: Converts string to class type.</p></li>
+<li><p><strong>TransformIfNotNone</strong>: Applies transformer only if value is not None.</p></li>
+</ul>
+</section>
+</section>
+<section id="comprehensive-example">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Comprehensive Example</a><a class="headerlink" href="#comprehensive-example" title="Link to this heading"></a></h2>
+<p>Let’s put it all together with an example using <code class="docutils literal notranslate"><span class="pre">ConfigurableSubclassFactory</span></code>, validators, and transformers.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">classconfig</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ConfigurableMixin</span><span class="p">,</span> <span class="n">ConfigurableValue</span><span class="p">,</span> <span class="n">ConfigurableSubclassFactory</span><span class="p">,</span>
+    <span class="n">ListOfConfigurableSubclassFactoryAttributes</span><span class="p">,</span> <span class="n">Config</span><span class="p">,</span> <span class="n">ConfigurableFactory</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">classconfig.validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">MinValueIntegerValidator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">classconfig.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumTransformer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="c1"># 1. Define an Enum and a Transformer for it</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LogLevel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">INFO</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span>
+    <span class="n">DEBUG</span> <span class="o">=</span> <span class="s2">&quot;DEBUG&quot;</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+
+<span class="c1"># 2. Define an abstract base class for plugins</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Plugin</span><span class="p">(</span><span class="n">ConfigurableMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<span class="c1"># 3. Define concrete plugins</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FilePlugin</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">ConfigurableValue</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Path to log file&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logging to file: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConsolePlugin</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">ConfigurableValue</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Log prefix&quot;</span><span class="p">,</span> <span class="n">user_default</span><span class="o">=</span><span class="s2">&quot;[LOG]&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> Logging to console&quot;</span><span class="p">)</span>
+
+<span class="c1"># 4. Define the main application configuration</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AppConfig</span><span class="p">(</span><span class="n">ConfigurableMixin</span><span class="p">):</span>
+    <span class="c1"># Simple value with validator and transformer</span>
+    <span class="n">log_level</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">ConfigurableValue</span><span class="p">(</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Logging level&quot;</span><span class="p">,</span>
+        <span class="n">user_default</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+        <span class="n">transform</span><span class="o">=</span><span class="n">EnumTransformer</span><span class="p">(</span><span class="n">LogLevel</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Value with validator</span>
+    <span class="n">max_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">ConfigurableValue</span><span class="p">(</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Maximum retries&quot;</span><span class="p">,</span>
+        <span class="n">user_default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">validator</span><span class="o">=</span><span class="n">MinValueIntegerValidator</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Subclass factory: allows choosing between FilePlugin and ConsolePlugin</span>
+    <span class="n">primary_plugin</span><span class="p">:</span> <span class="n">Plugin</span> <span class="o">=</span> <span class="n">ConfigurableSubclassFactory</span><span class="p">(</span>
+        <span class="n">parent_cls_type</span><span class="o">=</span><span class="n">Plugin</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Primary plugin to use&quot;</span><span class="p">,</span>
+        <span class="n">user_default</span><span class="o">=</span><span class="n">ConsolePlugin</span>
+    <span class="p">)</span>
+
+    <span class="c1"># List of subclass factories</span>
+    <span class="n">extra_plugins</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Plugin</span><span class="p">]</span> <span class="o">=</span> <span class="n">ListOfConfigurableSubclassFactoryAttributes</span><span class="p">(</span>
+        <span class="n">ConfigurableSubclassFactory</span><span class="p">(</span><span class="n">Plugin</span><span class="p">),</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;List of additional plugins&quot;</span><span class="p">,</span>
+        <span class="n">user_defaults</span><span class="o">=</span><span class="p">[</span><span class="n">ConsolePlugin</span><span class="p">]</span>
+    <span class="p">)</span>
+
+<span class="c1"># --- Usage ---</span>
+
+<span class="c1"># Generate config file</span>
+<span class="n">Config</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;advanced_config.yaml&quot;</span><span class="p">)</span>
+
+<span class="c1"># The generated YAML will look like this:</span>
+<span class="c1"># log_level: INFO # Logging level</span>
+<span class="c1"># max_retries: 3 # Maximum retries</span>
+<span class="c1"># primary_plugin: # Primary plugin to use</span>
+<span class="c1">#   cls: ConsolePlugin # name of class that is subclass of Plugin</span>
+<span class="c1">#   config: # configuration for defined class</span>
+<span class="c1">#     prefix: [LOG] # Log prefix</span>
+<span class="c1"># extra_plugins: # List of additional plugins</span>
+<span class="c1"># - cls: ConsolePlugin # name of class that is subclass of Plugin</span>
+<span class="c1">#   config: # configuration for defined class</span>
+<span class="c1">#     prefix: [LOG] # Log prefix</span>
+
+<span class="c1"># Load config (assuming we modified it to use FilePlugin for primary)</span>
+<span class="c1"># Let&#39;s simulate loading a modified config dict</span>
+<span class="n">config_data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;log_level&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;max_retries&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;primary_plugin&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="s2">&quot;FilePlugin&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/var/log/app.log&quot;</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;extra_plugins&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+
+<span class="c1"># In real usage: loaded_config = Config(AppConfig).load(&quot;advanced_config.yaml&quot;)</span>
+<span class="c1"># Here we mock the loading for demonstration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">classconfig</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoadedConfig</span>
+<span class="n">loaded_config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">)</span><span class="o">.</span><span class="n">trans_and_val</span><span class="p">(</span><span class="n">config_data</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="n">app_config</span> <span class="o">=</span> <span class="n">ConfigurableFactory</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">loaded_config</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Log Level: </span><span class="si">{</span><span class="n">app_config</span><span class="o">.</span><span class="n">log_level</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max Retries: </span><span class="si">{</span><span class="n">app_config</span><span class="o">.</span><span class="n">max_retries</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Primary Plugin Type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">primary_plugin</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">primary_plugin</span><span class="p">,</span> <span class="n">FilePlugin</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Primary Plugin Path: </span><span class="si">{</span><span class="n">app_config</span><span class="o">.</span><span class="n">primary_plugin</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># Log Level: LogLevel.DEBUG</span>
+<span class="c1"># Max Retries: 5</span>
+<span class="c1"># Primary Plugin Type: &lt;class &#39;__main__.FilePlugin&#39;&gt;</span>
+<span class="c1"># Primary Plugin Path: /var/log/app.log</span>
+</pre></div>
+</div>
+</section>
+<section id="why-yaml">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Why YAML?</a><a class="headerlink" href="#why-yaml" title="Link to this heading"></a></h2>
+<p>YAML is a human-readable data serialization language. It is easy to read and write. It is also easy to parse and
+generate.</p>
+<p>It supports hierarchical data structures, which are very useful when you need to represent configuration
+of a class that has other configurable classes as members.</p>
+<p>It supports comments, unlike e.g. json, which is also a big advantage.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to classconfig’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Martin Dočekal.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
