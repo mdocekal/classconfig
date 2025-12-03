@@ -10,13 +10,15 @@ import argparse
 import copy
 from contextlib import nullcontext
 from inspect import signature
+from io import StringIO
+from os import PathLike
 from pathlib import Path
 from typing import Any, Optional, Type, List, Generic, TypeVar, Sequence, Dict, Union, Callable, AbstractSet, TextIO
 
 from ruamel.yaml import CommentedMap, CommentedSeq
 
 from classconfig.base import ConfigurableAttribute
-from classconfig.classes import sub_cls_from_its_name, get_configurable_attributes
+from classconfig.classes import sub_cls_from_its_name, get_configurable_attributes, subclasses
 from classconfig.transforms import RelativePathTransformer
 from classconfig.yaml import YAML
 
@@ -572,6 +574,85 @@ class Config:
 
         return yaml
 
+    def generate_md_documentation(self, lvl: int = 0) -> str:
+        """
+        Generates markdown documentation for configuration.
+
+        :param lvl: current markdown level
+        :return: markdown documentation
+        """
+
+        md = ""
+        whitespace_prefix = "    " * lvl
+        prefix = whitespace_prefix + " * "
+
+        md += f"{prefix} Configuration for `{self.cls_type.__name__}`\n"
+
+        whitespace_prefix = "    " * (lvl + 1)
+        prefix = whitespace_prefix + " * "
+        md += f"{prefix} Example configuration: \n"
+
+        whitespace_prefix = "    " * (lvl + 2)
+        md += whitespace_prefix + "```yaml\n"
+        yaml_config = StringIO()
+        self.save(yaml_config, comments=True)
+        for line in yaml_config.getvalue().splitlines():
+            md += whitespace_prefix + line + "\n"
+        md += whitespace_prefix + "```\n"
+
+        whitespace_prefix = "    " * (lvl + 1)
+        prefix = whitespace_prefix + " * "
+
+        md += f"{prefix} Attributes:\n"
+
+        whitespace_prefix = "    " * (lvl + 2)
+        prefix = whitespace_prefix + " * "
+
+        for var_name, var in get_configurable_attributes(self.cls_type).items():
+            if ConfigurableFactory.should_omit(var_name, self.omit):
+                continue
+
+            if not isinstance(var, UsedConfig):
+                md += f"{prefix}{var.name}\n"
+                if var.desc is not None:
+                    md += f"{whitespace_prefix}    * <b>Description:</b> {var.desc}\n"
+
+            if isinstance(var, ConfigurableFactory):
+                md += Config(
+                    var.cls_type, self._parse_file_override_user_defaults(var),
+                    omit=self.pass_omit(self.omit, var_name, var)
+                ).generate_md_documentation(lvl + 3)
+            elif isinstance(var, ConfigurableSubclassFactory):
+                md += f"{whitespace_prefix}    * <b>Type:</b> Subclass of `{var.parent_cls_type.__name__}`\n"
+                if var.user_default is not None:
+                    md += f"{whitespace_prefix}    * <b>Default class:</b> `{var.user_default.__name__}`\n"
+
+                md += f"{whitespace_prefix}    * <b>Available subclasses:</b>\n"
+                for sub_cls in subclasses(var.parent_cls_type, abstract_ok=True):
+                    md += Config(sub_cls, self._parse_file_override_user_defaults(var),
+                                    omit=self.pass_omit(self.omit, var_name, var)) \
+                            .generate_md_documentation(lvl + 4)
+            elif isinstance(var, ListOfConfigurableSubclassFactoryAttributes):
+                md += f"{whitespace_prefix}    * <b>Type:</b> List of subclasses of `{var.configurable_subclass_factory.parent_cls_type.__name__}`\n"
+                if var.user_defaults is not None:
+                    md += f"{whitespace_prefix}    * <b>Default classes:</b> " + ", ".join([f"`{d.__name__}`" for d in var.user_defaults]) + "\n"
+
+                md += f"{whitespace_prefix}    * <b>Available subclasses:</b>\n"
+                for sub_cls in subclasses(var.configurable_subclass_factory.parent_cls_type, abstract_ok=True):
+                    md += Config(sub_cls, self._parse_file_override_user_defaults(var.configurable_subclass_factory),
+                                    omit=self.pass_omit(self.omit, var_name, var.configurable_subclass_factory)) \
+                            .generate_md_documentation(lvl + 4)
+
+            elif isinstance(var, ConfigurableValue):
+                md += f"{whitespace_prefix}    * <b>Type:</b> `{var.type.__name__ if var.type is not None else 'Any'}`\n"
+                if var.user_default is not None:
+                    md += f"{whitespace_prefix}    * <b>Default value:</b> `{var.user_default}`\n"
+            elif isinstance(var, UsedConfig):
+                continue
+            else:
+                raise ValueError(f"Unknown type {type(var)}")
+        return md
+
     @classmethod
     def config_from_object(cls, o: Any) -> "Config":
         """
@@ -613,18 +694,31 @@ class Config:
 
         return config
 
-    def save(self, file_path: Union[str, TextIO], comments: bool = True) -> None:
+    def save(self, file_path: Union[str, PathLike[str], TextIO], comments: bool = True) -> None:
         """
         Saves configuration into file.
 
         :param file_path: path to file
         :param comments: true inserts comments
         """
-        with open(file_path, "w") if isinstance(file_path, str) else nullcontext() as f:
-            if not isinstance(file_path, str):
+        with open(file_path, "w") if (isinstance(file_path, str) or isinstance(file_path, PathLike)) else nullcontext() as f:
+            if f is None:
                 f = file_path
             yaml = self.generate_yaml_config(comments=comments)
             YAML().dump(yaml, f)
+
+    def to_md(self, file_path: Union[str, PathLike[str], TextIO]) -> None:
+        """
+        Creates markdown documentation for configuration.
+
+        :param file_path: path to file
+        """
+
+        with open(file_path, "w") if (isinstance(file_path, str) or isinstance(file_path, PathLike)) else nullcontext() as f:
+            if f is None:
+                f = file_path
+            md = self.generate_md_documentation()
+            f.write(md)
 
     def _parse_file_override_user_defaults(self, attribute: ConfigurableAttribute) -> Optional[Dict]:
         """
@@ -654,7 +748,7 @@ class Config:
 
         return res
 
-    def load(self, path_to: Optional[str] = None, use_program_arguments: bool = True) -> LoadedConfig[str, Any]:
+    def load(self, path_to: Optional[Union[str, PathLike]] = None, use_program_arguments: bool = True) -> LoadedConfig[str, Any]:
         """
         Loads configuration from file and arguments.
 
@@ -674,7 +768,7 @@ class Config:
             conf_dict = YAML().load(f)
             if use_program_arguments:
                 conf_dict.update(self.get_values_from_arguments())
-            return self.trans_and_val(conf_dict, path_to)
+            return self.trans_and_val(conf_dict, str(path_to))
 
     def load_itself(self) -> LoadedConfig[str, Any]:
         """
@@ -985,13 +1079,13 @@ class CreatableMixin:
     """
 
     @classmethod
-    def create(cls: Type[T], config: Union[str, Dict[str, Any], LoadedConfig[str, Any]], path_to_config: Optional[str] = None) -> T:
+    def create(cls: Type[T], config: Union[str, PathLike[str], Dict[str, Any], LoadedConfig[str, Any]], path_to_config: Optional[str] = None) -> T:
         """
         Creates instance of given class.
 
         :param config: configuration for initialization
             it might be:
-                - string: path to YAML file with configuration
+                - string | Path: path to YAML file with configuration
                 - dictionary with configuration
                 - LoadedConfig object
         :param path_to_config: path to configuration file
@@ -999,7 +1093,7 @@ class CreatableMixin:
         :return: initialized class
         :raise ValueError: when the config type is invalid
         """
-        if isinstance(config, str):
+        if isinstance(config, str) or isinstance(config, PathLike):
             config = Config(cls).load(config)
         elif isinstance(config, dict):
             config = Config(cls).trans_and_val(config, path_to_config)

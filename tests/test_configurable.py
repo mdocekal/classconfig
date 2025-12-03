@@ -9,6 +9,7 @@ import os
 from dataclasses import field
 from enum import Enum
 from io import StringIO
+from pathlib import Path
 from typing import Optional
 from unittest import TestCase
 
@@ -96,7 +97,7 @@ class Num(Enum):
 
 class ConfigurableClass:
     config = UsedConfig()
-    a = ConfigurableValue(name="arg", desc="description of a", user_default=1)
+    a: int = ConfigurableValue(name="arg", desc="description of a", user_default=1)
     another = ConfigurableFactory(desc="class that needs configuration", cls_type=AnotherConfigurableClass,
                                   voluntary=True)
     b = ConfigurableValue(desc="description of b", user_default="TWO", transform=EnumTransformer(Num),
@@ -336,6 +337,48 @@ class TestConfig(TestCase):
 
     def test_load_yaml(self):
         config = self.config.load(CONFIG_PATH)
+
+        self.assertEqual({
+            "a": 1,
+            "another": {
+                "c": None,
+                "d": "abc"
+            },
+            "b": Num.TWO,
+            "parent": {
+                "cls": "ChildA",
+                "config": {
+                    "child_a_attribute": 3
+                }
+            },
+            "parent_with_default": {
+                "cls": "ChildB",
+                "config": {
+                    "child_b_attribute": 4,
+                    "another": {
+                        "c": None,
+                        "d": "cba"
+                    },
+                }
+            },
+            "loggers": [
+                {
+                    "cls": "ChildA",
+                    "config": {
+                        "child_a_attribute": 5
+                    }
+                },
+                {
+                    "cls": "ChildA",
+                    "config": {
+                        "child_a_attribute": 6
+                    }
+                }
+            ]
+        }, config)
+
+    def test_load_yaml_path(self):
+        config = self.config.load(Path(CONFIG_PATH))
 
         self.assertEqual({
             "a": 1,
@@ -821,8 +864,15 @@ class TestCreatableMixin(TestCase):
         self.assertEqual(2, res.b)
         self.assertEqual(3, res.c)
 
-    def test_create_from_path(self):
+    def test_create_from_str_path(self):
         res = CreatableClass.create(os.path.join(FIXTURES_PATH, "config_creatable.yaml"))
+        self.assertTrue(isinstance(res, CreatableClass))
+        self.assertEqual(1, res.a)
+        self.assertEqual(2, res.b)
+        self.assertEqual(3, res.c)
+
+    def test_create_from_path(self):
+        res = CreatableClass.create(Path(os.path.join(FIXTURES_PATH, "config_creatable.yaml")))
         self.assertTrue(isinstance(res, CreatableClass))
         self.assertEqual(1, res.a)
         self.assertEqual(2, res.b)

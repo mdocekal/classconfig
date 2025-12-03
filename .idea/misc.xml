@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="sofair_agent" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="suma" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="classconfig" project-jdk-type="Python SDK" />
 </project>
