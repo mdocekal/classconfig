@@ -644,7 +644,11 @@ class Config:
                             .generate_md_documentation(lvl + 4)
 
             elif isinstance(var, ConfigurableValue):
-                md += f"{whitespace_prefix}    * <b>Type:</b> `{var.type.__name__ if var.type is not None else 'Any'}`\n"
+                type_str = 'Any'
+                if var.type is not None:
+                    type_str = getattr(var.type, '__name__', str(var.type))
+
+                md += f"{whitespace_prefix}    * <b>Type:</b> `{type_str}`\n"
                 if var.user_default is not None:
                     md += f"{whitespace_prefix}    * <b>Default value:</b> `{var.user_default}`\n"
             elif isinstance(var, UsedConfig):
