@@ -1083,7 +1083,7 @@ class CreatableMixin:
     """
 
     @classmethod
-    def create(cls: Type[T], config: Union[str, PathLike[str], Dict[str, Any], LoadedConfig[str, Any]], path_to_config: Optional[str] = None) -> T:
+    def create(cls: Type[T], config: Union[str, PathLike[str], Dict[str, Any], LoadedConfig[str, Any]], path_to_config: Optional[str] = None, allow_extra: bool = True) -> T:
         """
         Creates instance of given class.
 
@@ -1094,13 +1094,14 @@ class CreatableMixin:
                 - LoadedConfig object
         :param path_to_config: path to configuration file
             if given, it might be used for transformation of relative paths
+        :param allow_extra: if True extra attributes in configuration are allowed
         :return: initialized class
         :raise ValueError: when the config type is invalid
         """
         if isinstance(config, str) or isinstance(config, PathLike):
-            config = Config(cls).load(config)
+            config = Config(cls, allow_extra=allow_extra).load(config)
         elif isinstance(config, dict):
-            config = Config(cls).trans_and_val(config, path_to_config)
+            config = Config(cls, allow_extra=allow_extra).trans_and_val(config, path_to_config)
         elif not isinstance(config, LoadedConfig):
             raise ValueError(f"Invalid config type {type(config)}")
 
