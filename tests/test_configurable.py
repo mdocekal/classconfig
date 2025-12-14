@@ -14,6 +14,7 @@ from typing import Optional
 from unittest import TestCase
 
 from attr import dataclass
+from ruamel.yaml.scalarstring import LiteralScalarString
 
 from classconfig import ConfigurableValue, ConfigurableFactory, Config, \
     ConfigurableMixin, DelayedFactory, ConfigurableSubclassFactory, \
@@ -59,7 +60,10 @@ class BaseOfAnotherConfigurableClass:
 
 
 class AnotherConfigurableClass(BaseOfAnotherConfigurableClass):
-    d = ConfigurableValue(desc="description of d", user_default="abc")
+    d = ConfigurableValue(desc="description of d",
+                          user_default=LiteralScalarString("""Multi-line
+string
+"""))
 
     def __init__(self, c: str, d: str):
         self.c = c
@@ -119,6 +123,252 @@ class ConfigurableClass:
         self.parent = parent
         self.parent_with_default = parent_with_default
         self.loggers = loggers
+
+
+MARKDOWN = """ *  Configuration for `ConfigurableClass`
+     *  Example configuration: 
+        ```yaml
+        arg: 1  # description of a
+        another: # class that needs configuration
+          c:
+          d: |
+            Multi-line
+            string
+         # description of d
+        b: TWO # description of b
+        parent: # description of parent
+          cls:  # name of class that is subclass of ParentC
+          config: # configuration for defined class
+        parent_with_default: # description of parent_with_default
+          cls: ChildB  # name of class that is subclass of ParentC
+          config: # configuration for defined class
+            child_b_attribute:
+            another:  # class that needs configuration
+              c:
+              d: |
+                Multi-line
+                string
+         # description of d
+        loggers: # list of loggers
+        - cls: ChildA  # name of class that is subclass of ParentC
+          config: # configuration for defined class
+            child_a_attribute:
+        - cls: ChildA  # name of class that is subclass of ParentC
+          config: # configuration for defined class
+            child_a_attribute:
+        ```
+     *  Attributes:
+         * arg
+            * <b>Description:</b> description of a
+            * <b>Type:</b> `int`
+            * <b>Default value:</b> `1`
+         * another
+            * <b>Description:</b> class that needs configuration
+             *  Configuration for `AnotherConfigurableClass`
+                 *  Example configuration: 
+                    ```yaml
+                    c:
+                    d: |
+                      Multi-line
+                      string
+                     # description of d
+                    ```
+                 *  Attributes:
+                     * c
+                        * <b>Type:</b> `Any`
+                     * d
+                        * <b>Description:</b> description of d
+                        * <b>Type:</b> `Any`
+                        * <b>Default value:</b>
+
+                        ```
+                        Multi-line
+                        string
+                        ```
+         * b
+            * <b>Description:</b> description of b
+            * <b>Type:</b> `Any`
+            * <b>Default value:</b> `TWO`
+         * parent
+            * <b>Description:</b> description of parent
+            * <b>Type:</b> Subclass of `ParentC`
+            * <b>Available subclasses:</b>
+                 *  Configuration for `ChildA`
+                     *  Example configuration: 
+                        ```yaml
+                        child_a_attribute:
+                        ```
+                     *  Attributes:
+                         * child_a_attribute
+                            * <b>Type:</b> `Any`
+                 *  Configuration for `ChildB`
+                     *  Example configuration: 
+                        ```yaml
+                        child_b_attribute:
+                        another:  # class that needs configuration
+                          c:
+                          d: |
+                            Multi-line
+                            string
+                         # description of d
+                        ```
+                     *  Attributes:
+                         * child_b_attribute
+                            * <b>Type:</b> `Any`
+                         * another
+                            * <b>Description:</b> class that needs configuration
+                             *  Configuration for `AnotherConfigurableClass`
+                                 *  Example configuration: 
+                                    ```yaml
+                                    c:
+                                    d: |
+                                      Multi-line
+                                      string
+                                     # description of d
+                                    ```
+                                 *  Attributes:
+                                     * c
+                                        * <b>Type:</b> `Any`
+                                     * d
+                                        * <b>Description:</b> description of d
+                                        * <b>Type:</b> `Any`
+                                        * <b>Default value:</b>
+
+                                        ```
+                                        Multi-line
+                                        string
+                                        ```
+                 *  Configuration for `ChildC`
+                     *  Example configuration: 
+                        ```yaml
+                        child_c_attribute: abc  # child c attribute
+                        ```
+                     *  Attributes:
+                         * child_c_attribute
+                            * <b>Description:</b> child c attribute
+                            * <b>Type:</b> `Any`
+                            * <b>Default value:</b> `abc`
+         * parent_with_default
+            * <b>Description:</b> description of parent_with_default
+            * <b>Type:</b> Subclass of `ParentC`
+            * <b>Default class:</b> `ChildB`
+            * <b>Available subclasses:</b>
+                 *  Configuration for `ChildA`
+                     *  Example configuration: 
+                        ```yaml
+                        child_a_attribute:
+                        ```
+                     *  Attributes:
+                         * child_a_attribute
+                            * <b>Type:</b> `Any`
+                 *  Configuration for `ChildB`
+                     *  Example configuration: 
+                        ```yaml
+                        child_b_attribute:
+                        another:  # class that needs configuration
+                          c:
+                          d: |
+                            Multi-line
+                            string
+                         # description of d
+                        ```
+                     *  Attributes:
+                         * child_b_attribute
+                            * <b>Type:</b> `Any`
+                         * another
+                            * <b>Description:</b> class that needs configuration
+                             *  Configuration for `AnotherConfigurableClass`
+                                 *  Example configuration: 
+                                    ```yaml
+                                    c:
+                                    d: |
+                                      Multi-line
+                                      string
+                                     # description of d
+                                    ```
+                                 *  Attributes:
+                                     * c
+                                        * <b>Type:</b> `Any`
+                                     * d
+                                        * <b>Description:</b> description of d
+                                        * <b>Type:</b> `Any`
+                                        * <b>Default value:</b>
+
+                                        ```
+                                        Multi-line
+                                        string
+                                        ```
+                 *  Configuration for `ChildC`
+                     *  Example configuration: 
+                        ```yaml
+                        child_c_attribute: abc  # child c attribute
+                        ```
+                     *  Attributes:
+                         * child_c_attribute
+                            * <b>Description:</b> child c attribute
+                            * <b>Type:</b> `Any`
+                            * <b>Default value:</b> `abc`
+         * loggers
+            * <b>Description:</b> list of loggers
+            * <b>Type:</b> List of subclasses of `ParentC`
+            * <b>Default classes:</b> `ChildA`, `ChildA`
+            * <b>Available subclasses:</b>
+                 *  Configuration for `ChildA`
+                     *  Example configuration: 
+                        ```yaml
+                        child_a_attribute:
+                        ```
+                     *  Attributes:
+                         * child_a_attribute
+                            * <b>Type:</b> `Any`
+                 *  Configuration for `ChildB`
+                     *  Example configuration: 
+                        ```yaml
+                        child_b_attribute:
+                        another:  # class that needs configuration
+                          c:
+                          d: |
+                            Multi-line
+                            string
+                         # description of d
+                        ```
+                     *  Attributes:
+                         * child_b_attribute
+                            * <b>Type:</b> `Any`
+                         * another
+                            * <b>Description:</b> class that needs configuration
+                             *  Configuration for `AnotherConfigurableClass`
+                                 *  Example configuration: 
+                                    ```yaml
+                                    c:
+                                    d: |
+                                      Multi-line
+                                      string
+                                     # description of d
+                                    ```
+                                 *  Attributes:
+                                     * c
+                                        * <b>Type:</b> `Any`
+                                     * d
+                                        * <b>Description:</b> description of d
+                                        * <b>Type:</b> `Any`
+                                        * <b>Default value:</b>
+
+                                        ```
+                                        Multi-line
+                                        string
+                                        ```
+                 *  Configuration for `ChildC`
+                     *  Example configuration: 
+                        ```yaml
+                        child_c_attribute: abc  # child c attribute
+                        ```
+                     *  Attributes:
+                         * child_c_attribute
+                            * <b>Description:</b> child c attribute
+                            * <b>Type:</b> `Any`
+                            * <b>Default value:</b> `abc`
+"""
 
 
 class ConfigurableClassWithMixin(ConfigurableMixin):
@@ -300,28 +550,35 @@ class TestConfigurableWithMixinFactory(TestCase):
 
 
 class TestConfig(TestCase):
-    str_repr = "arg: 1  # description of a\n" \
-               "another: # class that needs configuration\n" \
-               "  c:\n" \
-               "  d: abc  # description of d\n" \
-               "b: TWO # description of b\n" \
-               "parent: # description of parent\n" \
-               "  cls:  # name of class that is subclass of ParentC\n" \
-               "  config: # configuration for defined class\n" \
-               "parent_with_default: # description of parent_with_default\n" \
-               "  cls: ChildB  # name of class that is subclass of ParentC\n" \
-               "  config: # configuration for defined class\n" \
-               "    child_b_attribute:\n" \
-               "    another:  # class that needs configuration\n" \
-               "      c:\n" \
-               "      d: abc  # description of d\n" \
-               "loggers: # list of loggers\n" \
-               "- cls: ChildA  # name of class that is subclass of ParentC\n" \
-               "  config: # configuration for defined class\n" \
-               "    child_a_attribute:\n" \
-               "- cls: ChildA  # name of class that is subclass of ParentC\n" \
-               "  config: # configuration for defined class\n" \
-               "    child_a_attribute:\n"
+    str_repr = """arg: 1  # description of a
+another: # class that needs configuration
+  c:
+  d: |
+    Multi-line
+    string
+ # description of d
+b: TWO # description of b
+parent: # description of parent
+  cls:  # name of class that is subclass of ParentC
+  config: # configuration for defined class
+parent_with_default: # description of parent_with_default
+  cls: ChildB  # name of class that is subclass of ParentC
+  config: # configuration for defined class
+    child_b_attribute:
+    another:  # class that needs configuration
+      c:
+      d: |
+        Multi-line
+        string
+ # description of d
+loggers: # list of loggers
+- cls: ChildA  # name of class that is subclass of ParentC
+  config: # configuration for defined class
+    child_a_attribute:
+- cls: ChildA  # name of class that is subclass of ParentC
+  config: # configuration for defined class
+    child_a_attribute:
+"""
 
     def setUp(self) -> None:
         self.config = Config(ConfigurableClass)
@@ -334,6 +591,11 @@ class TestConfig(TestCase):
         stream = StringIO()
         self.config.save(stream)
         self.assertEqual(self.str_repr, stream.getvalue())
+
+    def test_md(self):
+        stream = StringIO()
+        self.config.to_md(stream)
+        self.assertEqual(MARKDOWN, stream.getvalue())
 
     def test_load_yaml(self):
         config = self.config.load(CONFIG_PATH)

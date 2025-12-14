@@ -406,7 +406,8 @@ class Config:
     """
 
     def __init__(self, cls_type: Type, file_override_user_defaults: Optional[Dict] = None,
-                 omit: Optional[Dict[str, Union[AbstractSet, Dict]]] = None, path_to: Optional[str] = None, allow_extra: bool = True):
+                 omit: Optional[Dict[str, Union[AbstractSet, Dict]]] = None, path_to: Optional[str] = None,
+                 allow_extra: bool = True):
         """
         defines for which class this factory is for
 
@@ -630,18 +631,19 @@ class Config:
                 md += f"{whitespace_prefix}    * <b>Available subclasses:</b>\n"
                 for sub_cls in subclasses(var.parent_cls_type, abstract_ok=True):
                     md += Config(sub_cls, self._parse_file_override_user_defaults(var),
-                                    omit=self.pass_omit(self.omit, var_name, var)) \
-                            .generate_md_documentation(lvl + 4)
+                                 omit=self.pass_omit(self.omit, var_name, var)) \
+                        .generate_md_documentation(lvl + 4)
             elif isinstance(var, ListOfConfigurableSubclassFactoryAttributes):
                 md += f"{whitespace_prefix}    * <b>Type:</b> List of subclasses of `{var.configurable_subclass_factory.parent_cls_type.__name__}`\n"
                 if var.user_defaults is not None:
-                    md += f"{whitespace_prefix}    * <b>Default classes:</b> " + ", ".join([f"`{d.__name__}`" for d in var.user_defaults]) + "\n"
+                    md += f"{whitespace_prefix}    * <b>Default classes:</b> " + ", ".join(
+                        [f"`{d.__name__}`" for d in var.user_defaults]) + "\n"
 
                 md += f"{whitespace_prefix}    * <b>Available subclasses:</b>\n"
                 for sub_cls in subclasses(var.configurable_subclass_factory.parent_cls_type, abstract_ok=True):
                     md += Config(sub_cls, self._parse_file_override_user_defaults(var.configurable_subclass_factory),
-                                    omit=self.pass_omit(self.omit, var_name, var.configurable_subclass_factory)) \
-                            .generate_md_documentation(lvl + 4)
+                                 omit=self.pass_omit(self.omit, var_name, var.configurable_subclass_factory)) \
+                        .generate_md_documentation(lvl + 4)
 
             elif isinstance(var, ConfigurableValue):
                 type_str = 'Any'
@@ -650,7 +652,14 @@ class Config:
 
                 md += f"{whitespace_prefix}    * <b>Type:</b> `{type_str}`\n"
                 if var.user_default is not None:
-                    md += f"{whitespace_prefix}    * <b>Default value:</b> `{var.user_default}`\n"
+                    if isinstance(var.user_default, str) and len(lines := var.user_default.splitlines()) > 1:
+                        md += f"{whitespace_prefix}    * <b>Default value:</b>\n\n"
+                        md += f"{whitespace_prefix}    ```\n"
+                        for line in lines:
+                            md += f"{whitespace_prefix}    {line}\n"
+                        md += f"{whitespace_prefix}    ```\n"
+                    else:
+                        md += f"{whitespace_prefix}    * <b>Default value:</b> `{var.user_default}`\n"
             elif isinstance(var, UsedConfig):
                 continue
             else:
@@ -705,7 +714,8 @@ class Config:
         :param file_path: path to file
         :param comments: true inserts comments
         """
-        with open(file_path, "w") if (isinstance(file_path, str) or isinstance(file_path, PathLike)) else nullcontext() as f:
+        with open(file_path, "w") if (
+                isinstance(file_path, str) or isinstance(file_path, PathLike)) else nullcontext() as f:
             if f is None:
                 f = file_path
             yaml = self.generate_yaml_config(comments=comments)
@@ -718,7 +728,8 @@ class Config:
         :param file_path: path to file
         """
 
-        with open(file_path, "w") if (isinstance(file_path, str) or isinstance(file_path, PathLike)) else nullcontext() as f:
+        with open(file_path, "w") if (
+                isinstance(file_path, str) or isinstance(file_path, PathLike)) else nullcontext() as f:
             if f is None:
                 f = file_path
             md = self.generate_md_documentation()
@@ -752,7 +763,8 @@ class Config:
 
         return res
 
-    def load(self, path_to: Optional[Union[str, PathLike]] = None, use_program_arguments: bool = True) -> LoadedConfig[str, Any]:
+    def load(self, path_to: Optional[Union[str, PathLike]] = None, use_program_arguments: bool = True) -> LoadedConfig[
+        str, Any]:
         """
         Loads configuration from file and arguments.
 
@@ -767,7 +779,7 @@ class Config:
 
         if path_to is None:
             return self.load_itself()
-        
+
         with open(path_to, "r") as f:
             conf_dict = YAML().load(f)
             if use_program_arguments:
@@ -942,7 +954,8 @@ class Config:
 
     def trans_and_val_list_of_configurable_subclass_factory(self, attribute_name: str,
                                                             attribute: ListOfConfigurableSubclassFactoryAttributes,
-                                                            value: Any, path_to: Optional[str]) -> Optional[List[Dict[str, Any]]]:
+                                                            value: Any, path_to: Optional[str]) -> Optional[
+        List[Dict[str, Any]]]:
         """
         Transforms and validates values in configuration for list of configurable subclass factory attribute.
 
@@ -1083,7 +1096,8 @@ class CreatableMixin:
     """
 
     @classmethod
-    def create(cls: Type[T], config: Union[str, PathLike[str], Dict[str, Any], LoadedConfig[str, Any]], path_to_config: Optional[str] = None, allow_extra: bool = True) -> T:
+    def create(cls: Type[T], config: Union[str, PathLike[str], Dict[str, Any], LoadedConfig[str, Any]],
+               path_to_config: Optional[str] = None, allow_extra: bool = True) -> T:
         """
         Creates instance of given class.
 
@@ -1106,4 +1120,3 @@ class CreatableMixin:
             raise ValueError(f"Invalid config type {type(config)}")
 
         return ConfigurableFactory(cls).create(config)
-
