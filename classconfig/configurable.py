@@ -714,7 +714,7 @@ class Config:
         :param file_path: path to file
         :param comments: true inserts comments
         """
-        with open(file_path, "w") if (
+        with open(file_path, "w", encoding='utf-8') if (
                 isinstance(file_path, str) or isinstance(file_path, PathLike)) else nullcontext() as f:
             if f is None:
                 f = file_path
@@ -728,7 +728,7 @@ class Config:
         :param file_path: path to file
         """
 
-        with open(file_path, "w") if (
+        with open(file_path, "w", encoding='utf-8') if (
                 isinstance(file_path, str) or isinstance(file_path, PathLike)) else nullcontext() as f:
             if f is None:
                 f = file_path
@@ -780,7 +780,7 @@ class Config:
         if path_to is None:
             return self.load_itself()
 
-        with open(path_to, "r") as f:
+        with open(path_to, "r", encoding='utf-8') as f:
             conf_dict = YAML().load(f)
             if use_program_arguments:
                 conf_dict.update(self.get_values_from_arguments())
